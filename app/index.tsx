@@ -1,6 +1,7 @@
 import Entypo from '@expo/vector-icons/Entypo';
 import { useRouter } from 'expo-router';
-import { useState } from "react";
+import * as ScreenOrientation from "expo-screen-orientation";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 const questions = [
@@ -28,7 +29,28 @@ const questions = [
 
 export default function Index() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [orientation, setOrientation] = useState<string>("UNKNOWN");
   const router = useRouter();
+
+  // ORIENTATION HANDLING
+  useEffect(() => {
+    (async () => {
+      const o = await ScreenOrientation.getOrientationAsync();
+      setOrientation(ScreenOrientation.Orientation[o]);
+    })();
+  
+    const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
+      const o = event.orientationInfo.orientation;
+      setOrientation(ScreenOrientation.Orientation[o]);
+    });
+  
+    return () => {
+      ScreenOrientation.removeOrientationChangeListener(subscription);
+    };
+  }, []);
+  
+  const isPortrait = orientation === "PORTRAIT_UP" || orientation === "PORTRAIT_DOWN";
+
 
   const handleAnswer = (answer: boolean) => {
     if (answer === questions[currentQuestion].answer) {
@@ -50,7 +72,7 @@ export default function Index() {
     }
   };
 
-  return (
+  return(
     <View
       style={{
         flex: 1,
@@ -60,7 +82,6 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      {/* 👇 This is what shows the current question */}
       <Text style={{ marginBottom: 50, textAlign: "center", fontSize: 16 }}>
         {questions[currentQuestion].text}
       </Text>
@@ -126,15 +147,19 @@ export default function Index() {
           </Text>
         </Pressable>
       </View>
+
       <Pressable
-        onPress={() => router.navigate('/cheat')}
+        onPress={() =>
+          router.push({
+            pathname: "/cheat",
+            params: { answer: questions[currentQuestion].answer ? "1" : "0" },
+          })
+        }
         style={{
-          marginTop: 30
+          marginTop: 30,
         }}
       >
-        <Text style={{ color: "blue", fontSize: 16}}>
-          CHEAT
-        </Text>
+        <Text style={{ color: "blue", fontSize: 16 }}>CHEAT</Text>
       </Pressable>
     </View>
   );
