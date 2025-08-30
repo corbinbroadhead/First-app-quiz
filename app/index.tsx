@@ -1,4 +1,4 @@
-import Entypo from '@expo/vector-icons/Entypo';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useRouter } from 'expo-router';
 import * as ScreenOrientation from "expo-screen-orientation";
 import { useEffect, useState } from "react";
@@ -129,7 +129,7 @@ export default function Index() {
           }}
         >
           <Text style={{ color: "white", fontWeight: "bold", fontSize: 14 }}>
-            {"<- "}PREV
+          <FontAwesome name="chevron-left" size={12} color="white" />   PREV
           </Text>
         </Pressable>
 
@@ -143,7 +143,7 @@ export default function Index() {
           }}
         >
           <Text style={{ color: "white", fontWeight: "bold", fontSize: 14 }}>
-            NEXT{" ->"}
+            NEXT   <FontAwesome name="chevron-right" size={12} color="white" />
           </Text>
         </Pressable>
       </View>
@@ -164,22 +164,3 @@ export default function Index() {
     </View>
   );
 }
-
-
-const alertMe = () => alert("Hi from alertMe");
-
-<Pressable onPress={() => alert("PRESSED")}>
-  <Text>Pressable child</Text>
-  <Entypo name="chevron-right" size={24} color="black" />
-</Pressable>
-
-//STATE
-// states are how we use question control.
-//  add useState to  import (from "react;")
-// 
-
-//import { Link } from exporouter;
-//<Link href="/newpage" asChild>
-// pressable
-//</Link>
-//Expo Router
