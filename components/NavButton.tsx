@@ -4,8 +4,8 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 type NavButtonProps = {
   text: string;
   onPress: () => void;
-  icon?: React.ReactNode; // lets you pass in <FontAwesome ... />
-  iconPosition?: "left" | "right"; // control icon placement
+  icon?: React.ReactNode;
+  iconPosition?: "left" | "right";
 };
 
 const NavButton = ({ text, onPress, icon, iconPosition = "left" }: NavButtonProps) => {
