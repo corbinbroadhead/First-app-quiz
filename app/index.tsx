@@ -1,12 +1,15 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useRouter } from 'expo-router';
-import * as ScreenOrientation from "expo-screen-orientation";
+import { addOrientationChangeListener, Orientation, removeOrientationChangeListener, unlockAsync } from "expo-screen-orientation";
 import { useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import AnswerButton from '../components/AnswerButton';
+import CheatButton from "../components/CheatButton";
+import NavButton from "../components/NavButton";
 
 const questions = [
   {
-    text: "Despite being one of the NFL's youngest teams, the Ravens have won two Super Bowls. That is the same total or more than some of the NFL's oldest franchises; the Bears, Cardinals, Eagles, and Lions, among others.",
+    text: "Despite being one of the NFL's youngest teams, the Ravens have won two Super Bowls. That is the same total or more than some of the NFL's oldest franchises; the Bears, Cardinals, Eagles, Lions, and Bills, among others.",
     answer: true,
   },
   {
@@ -29,36 +32,29 @@ const questions = [
 
 export default function Index() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [orientation, setOrientation] = useState<string>("UNKNOWN");
+  const [currentOrientation, setOrientation] = useState(Orientation.PORTRAIT_UP);
   const router = useRouter();
 
-  // ORIENTATION HANDLING
+  // ORIENTAITON 2
   useEffect(() => {
-    (async () => {
-      const o = await ScreenOrientation.getOrientationAsync();
-      setOrientation(ScreenOrientation.Orientation[o]);
-    })();
-  
-    const subscription = ScreenOrientation.addOrientationChangeListener((event) => {
-      const o = event.orientationInfo.orientation;
-      setOrientation(ScreenOrientation.Orientation[o]);
+    // add listener
+    unlockAsync();
+    const subscription = addOrientationChangeListener((event) => {
+      setOrientation(event.orientationInfo.orientation);
     });
-  
     return () => {
-      ScreenOrientation.removeOrientationChangeListener(subscription);
-    };
+      removeOrientationChangeListener(subscription);
+      // remove listener
+    }
   }, []);
   
-  const isPortrait = orientation === "PORTRAIT_UP" || orientation === "PORTRAIT_DOWN";
-
-
+  ////
   const handleAnswer = (answer: boolean) => {
     if (answer === questions[currentQuestion].answer) {
       alert("Correct!");
       navigate(true);
     } else {
       alert("Incorrect!");
-      navigate(true);
     }
   };
 
@@ -82,85 +78,39 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text style={{ marginBottom: 50, textAlign: "center", fontSize: 16 }}>
+      <Text style={{ marginBottom: 30, textAlign: "center", fontSize: 16 }}>
         {questions[currentQuestion].text}
       </Text>
 
       <View style={{ flexDirection: "row", gap: 30, marginBottom: 20 }}>
-        <Pressable
-          onPress={() => handleAnswer(true)}
-          style={{
-            backgroundColor: "#241773",
-            paddingVertical: 12,
-            paddingHorizontal: 30,
-            marginRight: 10,
-            borderRadius: 20,
-          }}
-        >
-          <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>
-            TRUE
-          </Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => handleAnswer(false)}
-          style={{
-            backgroundColor: "#241773",
-            paddingVertical: 12,
-            paddingHorizontal: 30,
-            borderRadius: 20,
-          }}
-        >
-          <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>
-            FALSE
-          </Text>
-        </Pressable>
+        <AnswerButton text="TRUE" onPress={() => handleAnswer(true)} />
+        <AnswerButton text="FALSE" onPress={() => handleAnswer(false)} />
       </View>
 
       <View style={{ flexDirection: "row", gap: 5, marginTop: 10 }}>
-        <Pressable
+        <NavButton
+          text="PREV"
           onPress={() => navigate(false)}
-          style={{
-            backgroundColor: "#241773",
-            paddingVertical: 8,
-            paddingHorizontal: 24,
-            marginTop: 12,
-            marginRight: 10,
-          }}
-        >
-          <Text style={{ color: "white", fontWeight: "bold", fontSize: 14 }}>
-          <FontAwesome name="chevron-left" size={12} color="white" />   PREV
-          </Text>
-        </Pressable>
+          icon={<FontAwesome name="chevron-left" size={12} color="white" />}
+          iconPosition="left"
+        />
 
-        <Pressable
+        <NavButton
+          text="NEXT"
           onPress={() => navigate(true)}
-          style={{
-            backgroundColor: "#241773",
-            paddingVertical: 8,
-            marginTop: 12,
-            paddingHorizontal: 24,
-          }}
-        >
-          <Text style={{ color: "white", fontWeight: "bold", fontSize: 14 }}>
-            NEXT   <FontAwesome name="chevron-right" size={12} color="white" />
-          </Text>
-        </Pressable>
+          icon={<FontAwesome name="chevron-right" size={12} color="white" />}
+          iconPosition="right"
+        />
       </View>
 
-      <Pressable
+      <CheatButton
         onPress={() =>
           router.push({
             pathname: "/cheat",
             params: { answer: questions[currentQuestion].answer ? "1" : "0" },
           })
         }
-        style={{
-          marginTop: 30,
-        }}
-      >
-        <Text style={{ color: "blue", fontSize: 16 }}>CHEAT</Text>
-      </Pressable>
+      />
     </View>
   );
 }
