@@ -68,7 +68,7 @@ export default function Index() {
     }
   };
 
-  return(
+  return (
     <View
       style={{
         flex: 1,
@@ -76,41 +76,69 @@ export default function Index() {
         margin: 20,
         paddingBottom: 60,
         alignItems: "center",
+        flexDirection: "column",
       }}
     >
-      <Text style={{ marginBottom: 30, textAlign: "center", fontSize: 16 }}>
-        {questions[currentQuestion].text}
-      </Text>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text
+          style={{
+            marginBottom: 30,
+            textAlign: "center",
+            marginLeft:
+              currentOrientation === Orientation.LANDSCAPE_LEFT ||
+              currentOrientation === Orientation.LANDSCAPE_RIGHT
+              ? 70 : 0,
+            marginRight:
+              currentOrientation === Orientation.LANDSCAPE_LEFT ||
+              currentOrientation === Orientation.LANDSCAPE_RIGHT
+              ? 70 : 0,
+            marginTop:
+              currentOrientation === Orientation.LANDSCAPE_LEFT ||
+              currentOrientation === Orientation.LANDSCAPE_RIGHT
+              ? 50 : 0,
+            fontSize:
+              currentOrientation === Orientation.PORTRAIT_UP ? 16 : 20,
+          }}
+        >
+          {questions[currentQuestion].text}
+        </Text>
 
-      <View style={{ flexDirection: "row", gap: 30, marginBottom: 20 }}>
-        <AnswerButton text="TRUE" onPress={() => handleAnswer(true)} />
-        <AnswerButton text="FALSE" onPress={() => handleAnswer(false)} />
-      </View>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 30,
+            marginBottom: 20,
+          }}
+        >
+          <AnswerButton text="TRUE" onPress={() => handleAnswer(true)} />
+          <AnswerButton text="FALSE" onPress={() => handleAnswer(false)} />
+        </View>
 
-      <View style={{ flexDirection: "row", gap: 5, marginTop: 10 }}>
-        <NavButton
-          text="PREV"
-          onPress={() => navigate(false)}
-          icon={<FontAwesome name="chevron-left" size={12} color="white" />}
-          iconPosition="left"
+        <View style={{ flexDirection: "row", gap: 5, marginTop: 10 }}>
+          <NavButton
+            text="PREV"
+            onPress={() => navigate(false)}
+            icon={<FontAwesome name="chevron-left" size={12} color="white" />}
+            iconPosition="left"
+          />
+
+          <NavButton
+            text="NEXT"
+            onPress={() => navigate(true)}
+            icon={<FontAwesome name="chevron-right" size={12} color="white" />}
+            iconPosition="right"
+          />
+        </View>
+
+        <CheatButton
+          onPress={() =>
+            router.push({
+              pathname: "/cheat",
+              params: { answer: questions[currentQuestion].answer ? "1" : "0" },
+            })
+          }
         />
-
-        <NavButton
-          text="NEXT"
-          onPress={() => navigate(true)}
-          icon={<FontAwesome name="chevron-right" size={12} color="white" />}
-          iconPosition="right"
-        />
       </View>
-
-      <CheatButton
-        onPress={() =>
-          router.push({
-            pathname: "/cheat",
-            params: { answer: questions[currentQuestion].answer ? "1" : "0" },
-          })
-        }
-      />
     </View>
   );
 }
